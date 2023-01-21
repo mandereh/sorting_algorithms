@@ -1,59 +1,58 @@
 #include "sort.h"
 
+void swap(listint_t **head, listint_t *node1, listint_t *node2);
 /**
- * insertion_sort_list - sorts list with insertion sort
- * @list: input list to sort
+ * insertion_sort_list - sorts a doubly linked list with
+ * the insertion sort algorithm
+ *
+ * @list: list to be sorted
+ *
+ * Return: void
  */
 void insertion_sort_list(listint_t **list)
 {
-	listint_t *temp, *pn, *nxt;
+	listint_t *forw, *tmp;
 
-	if (list && *list && (*list)->next)
+	if (list == NULL || *list == NULL || (*list)->next == NULL)
+		return;
+
+	for (forw = (*list)->next; forw && forw->prev; forw = forw->next)
 	{
-		temp = (*list)->next;
-		pn = temp->prev;
-		nxt = temp->next;
-
-		while (temp)
+		for (; forw && forw->prev && forw->n < forw->prev->n;
+		     forw = forw->prev)
 		{
-			if (temp->n < pn->n)
-			{
-				swap_list(pn, temp, nxt, list);
-			}
-			temp = nxt;
-			if (temp)
-			{
-				nxt = temp->next;
-				pn = temp->prev;
-			}
+			tmp = forw->prev;
+			swap(list, tmp, forw);
+			print_list(*list);
+			forw = forw->next;
 		}
 	}
 }
 
 /**
- * swap_list - swaps the position of two nodes in a linked list
- * @pn: previous node
- * @temp: temp
- * @nxt: next node
- * @h: head of list
+ * swap - swaps two nodes
+ * @head: the head node
+ * @node1: The first node
+ * @node2: the second node
+ *
+ * Return: void
  */
-void swap_list(listint_t *pn, listint_t *temp, listint_t *nxt, listint_t **h)
+void swap(listint_t **head, listint_t *node1, listint_t *node2)
 {
+	listint_t *prev, *next;
 
-	while (pn && temp->n < pn->n)
-	{
-		if (nxt)
-			nxt->prev = pn;
-		temp->next = pn;
-		temp->prev = pn->prev;
-		if (pn->prev)
-			(pn->prev)->next = temp;
-		pn->prev = temp;
-		pn->next = nxt;
-		nxt = pn;
-		pn = temp->prev;
-		if ((*h)->prev)
-			*h = (*h)->prev;
-		print_list(*h);
-	}
+	prev = node1->prev;
+	next = node2->next;
+
+	if (prev != NULL)
+		prev->next = node2;
+	else
+		*head = node2;
+
+	node1->prev = node2;
+	node1->next = next;
+	node2->prev = prev;
+	node2->next = node1;
+	if (next)
+		next->prev = node1;
 }
